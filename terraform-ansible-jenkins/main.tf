@@ -1,35 +1,40 @@
 provider "aws" {
-  region = "us-east-1"  
+    region = "eu-north-1"
+  
 }
 
 resource "aws_instance" "frontend" {
-  ami           = "ami-0453ec754f44f9a4a"  
-  instance_type = "t2.micro"
-  key_name      = "devops"
-  tags = {
-    Name = "frontend"
-  }
-
-  
-  user_data = <<-EOT
+    ami = "ami-02a0945ba27a488b7"
+    instance_type = "t3.large"
+    key_name = "Linux-Testing"
+    user_data = <<-EOF
               #!/bin/bash
               hostnamectl set-hostname c8.local
-              EOT
+              sudo yum update -y
+              echo "127.0.0.1 c8.local" >> /etc/hosts
+              EOF
+
+        tags = {
+          Name = "frontend"
+        }
 }
 
 resource "aws_instance" "backend" {
-  ami           = "ami-0e2c8caa4b6378d8c"  
-  instance_type = "t2.micro"
-  key_name      = "devops"
-  tags = {
-    Name = "backend"
-  }
-
-  
-  user_data = <<-EOT
+    ami = "ami-089146c5626baa6bf"
+    instance_type = "t3.large"
+    key_name = "Linux-Testing"
+     user_data = <<-EOF
               #!/bin/bash
               hostnamectl set-hostname u21.local
-              EOT
+              sudo apt-get update -y
+              sudo apt-get upgrade -y
+              echo "127.0.0.1 u21.local" >> /etc/hosts
+              EOF
+        tags = {
+          Name = "backend"
+        }
+  
+}
 }
 output "frontend_ip" {
   value = aws_instance.frontend.public_ip
